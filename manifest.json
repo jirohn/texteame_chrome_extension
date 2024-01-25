@@ -1,0 +1,21 @@
+{
+    "manifest_version": 3,
+    "name": "Texteame",
+    "version": "1.0",
+    "description": "Automatización de publicación en Texteame.es",
+    "permissions": [
+      "activeTab"
+    ],
+    "background": {
+      
+    },
+    "content_scripts": [
+        {
+          "matches": ["https://texteame.es/node/*"],
+          "js": ["content.js"]
+        }
+      ],
+    "action": {
+      "default_popup": "popup.html"
+    }
+}
