@@ -4,7 +4,8 @@
     "version": "1.0",
     "description": "Automatización de publicación en Texteame.es",
     "permissions": [
-      "activeTab"
+      "activeTab",
+      "storage"
     ],
     "background": {
       

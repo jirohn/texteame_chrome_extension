@@ -15,3 +15,13 @@ chrome.storage.local.set({
   'ciudad': ciudad,
   'telefono': telefono
 });
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if (request.action == "autorellenar") {
+      // Aquí añades la lógica para autorellenar los campos
+      // Ejemplo:
+      // document.querySelector('#campoTituloAnuncio').value = request.data.tituloAnuncio;
+      // Y así sucesivamente para cada campo
+    }
+  }
+);

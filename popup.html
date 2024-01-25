@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Texteame</title>
+  <meta charset="UTF-8">
+  <title>Texteame Publica2</title>
   <style>
     body {
       width: 300px;
@@ -12,23 +13,53 @@
       text-align: center;
     }
     #copyButton {
-      display: none;
       margin-top: 10px;
       text-align: center;
     }
+
+
     #mensaje {
       margin-top: 10px;
       font-weight: bold;
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #ddd;
+    }
+
   </style>
 </head>
 <body>
   <div id="message">No estás en Texteame, haz click <a href="#" id="enterLink">aquí</a> para entrar a un cliente.</div>
-  <button id="copyButton">¿Quieres copiar los datos de este cliente?</button>
+  
+  <div id="onPage" style="display: none;">
+    <p>¿Quieres copiar los datos de este cliente?</p>
+    <button id="copyButton">Copiar</button>
+    <div id="datosCopiados" style="display: none;"></div>
+    <button id="autorellenarButton" disabled>Autorellenar</button>
+    <div id="mensajeIncompatibilidad" style="display: none;">Esta página no es compatible</div>
 
-  <!-- Div para mostrar el mensaje y los datos copiados -->
-  <div id="mensaje"></div>
-  <pre id="datosCopiados"></pre>
+  </div>
+  
+  </div>
 
   <script src="popup.js"></script>
 </body>
