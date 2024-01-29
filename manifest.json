@@ -7,16 +7,19 @@
       "activeTab",
       "storage"
     ],
+    "icons": {
+      "512": "icon.png"
+    },
     "background": {
       
     },
     "content_scripts": [
-        {
-          "matches": ["https://texteame.es/node/*"],
-          "js": ["content.js"]
-        }
-      ],
-    "action": {
+      {
+        "matches": ["https://texteame.es/node/*", "https://www.destacamos.net/*", "https://www.loquosex.com/publicar-anuncio/*"],
+        "js": ["content.js"]
+      }
+  ],
+     "action": {
       "default_popup": "popup.html"
     }
 }
