@@ -11,6 +11,16 @@ var nacionalidad = "";
 
 // Función para mostrar los datos en el popup
 function mostrarDatosEnPopup() {
+    // si el usuario no tiene permisos, no mostramos los datos y mostramos un boton que diga contratar, que te lleve a la pagina de contratacion
+    verificarPermisosUsuario(function (tienePermisos) {
+        if (tienePermisos) {
+            mostrarDatosEnPopupConPermisos();
+        } else {
+            mostrarDatosEnPopupSinPermisos();
+        }
+    });
+}
+function mostrarDatosEnPopupConPermisos() {
     var html = '<table>' +
         '<tr><th>Campo</th><th>Datos</th></tr>' +
         '<tr><td>Text Anuncio</td><td>' + textAnuncio + '</td></tr>' +
@@ -27,36 +37,37 @@ function mostrarDatosEnPopup() {
     document.getElementById("datosCopiados").innerHTML = html;
     document.getElementById("datosCopiados").style.display = "block";
 }
+function mostrarDatosEnPopupSinPermisos() {
+    //no añadimos los datos al popup y mostramos un boton que diga contratar, que te lleve a la pagina de contratacion
+    //creamos el boton de contratar
 
-// Función para autorellenar campos en la página objetivo
-function autorellenarCamposEnPagina(datos) {
-    if (document.location.href.includes("https://www.destacamos.net/newad.php?step=3")) {
-        // Rellenar el título
-        document.querySelector('input[name="title"]').value = datos.tituloAnuncio || '';
-        // Rellenar la descripción
-        document.querySelector('textarea[name="description"]').value = datos.textAnuncio || '';
-        // Rellenar el teléfono
-        document.querySelector('input[name="telefono"]').value = datos.telefono || '';
-        // Más campos según sea necesario...
-    }
+    document.getElementById("datosCopiados").style.display = "none";
+    document.getElementById("message").style.display = "block";
+    document.getElementById("message").innerHTML = "No tienes permisos para ver los datos, contrata el servicio para poder verlos";
+    document.getElementById("contratarButton").style.display = "block";
+    document.getElementById("contratarButton").addEventListener("click", function() {
+        chrome.tabs.create({url: 'https://wa.me/34690019789?text=Hola,%20quiero%20contactarte,%20por%20informacion%20de%20Publica2'});
+    });
+
 }
 
-function autorellenar() {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {
-            action: "autorellenar",
-            data: {
-                textAnuncio: textAnuncio,
-                tituloAnuncio: tituloAnuncio,
-                nombre: nombre,
-                edad: edad,
-                ciudad: ciudad,
-                telefono: telefono
-            }
-        });
+function verificarPermisosUsuario(callback) {
+    fetch('https://texteame.es/isactivated')
+    .then(response => response.text())
+    .then(text => {
+        if (text === 'true') {
+            callback(true);
+            //eliminamos el boton de contratar
+            document.getElementById("contratarButton").style.display = "none";
+        } else {
+            callback(false);
+        }
+    })
+    .catch(error => {
+        console.error('Error al verificar permisos:', error);
+        callback(false);
     });
 }
-
 document.addEventListener('DOMContentLoaded', function () {
     function obtenerDatosAlmacenados() {
         chrome.storage.local.get([
@@ -88,7 +99,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 nacionalidad = result.nacionalidad;
                 mostrarDatosEnPopup();
                 document.getElementById("onPage").style.display = "block";
-                document.getElementById("autorellenarButton").disabled = false;
+                document.getElementById("autorellenarButton").disabled = true;
+                
             }
         });
     }
@@ -97,7 +109,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var copyButton = document.getElementById("copyButton");
     copyButton.addEventListener("click", obtenerDatosAlmacenados);
+    var borrarButton = document.getElementById("borrarButton");
+    borrarButton.addEventListener("click", function() {
+        chrome.storage.local.clear();
+        //borramos las variables
+        textAnuncio = "";
+        tituloAnuncio = "";
+        nombre = "";
+        edad = "";
+        provincia = "";
+        ciudad = "";
+        telefono = "";
+        whatsapp = "";
+        nacionalidad = "";
+        //borramos los datos del popup
+        document.getElementById("message").style.display = "block";
+        document.getElementById("datosCopiados").style.display = "none";
+        document.getElementById("onPage").style.display = "none";
+        
+        
 
+
+    });
+    
     var autorellenarButton = document.getElementById("autorellenarButton");
     autorellenarButton.addEventListener("click", function() {
         autorellenar();
@@ -113,7 +147,21 @@ document.addEventListener('DOMContentLoaded', function () {
             nacionalidad: nacionalidad
         });
     });
-
+    //si pulsamos borrar se borraran los datos de la memoria
+    var borrarButton = document.getElementById("borrarButton");
+    borrarButton.addEventListener("click", function() {
+        chrome.storage.local.clear();
+        //borramos las variables
+        textAnuncio = "";
+        tituloAnuncio = "";
+        nombre = "";
+        edad = "";
+        provincia = "";
+        ciudad = "";
+        telefono = "";
+        whatsapp = "";
+        nacionalidad = "";
+    });
     var enterLink = document.getElementById('enterLink');
     enterLink.addEventListener('click', function () {
         chrome.tabs.create({url: 'http://texteame.es'});

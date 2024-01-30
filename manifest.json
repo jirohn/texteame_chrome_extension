@@ -15,7 +15,7 @@
     },
     "content_scripts": [
       {
-        "matches": ["https://texteame.es/node/*", "https://www.destacamos.net/*", "https://www.loquosex.com/publicar-anuncio/*"],
+        "matches": ["https://texteame.es/node/*", "https://putapasion.com/perfil/nuevo/*" ,"https://www.destacamos.net/*","https://www.mundosexanuncio.com/publicar*" ,"https://www.loquosex.com/publicar-anuncio/*", "https://tuteanuncias.com/listing-form/*" ,"https://vipscort.es/listing-form/*"],
         "js": ["content.js"]
       }
   ],

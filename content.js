@@ -2,10 +2,27 @@
 function esPaginaDeTexteame() {
   return window.location.href.includes("texteame.es/node/");
 }
-
+function verificarPermisosUsuario(callback) {
+  fetch('https://texteame.es/isactivated')
+  .then(response => response.text())
+  .then(text => {
+      if (text === 'true') {
+          callback(true);
+      } else {
+          callback(false);
+      }
+  })
+  .catch(error => {
+      console.error('Error al verificar permisos:', error);
+      callback(false);
+  });
+}
 // Función para capturar y almacenar datos desde Texteame
 function capturarYAlmacenarDatosDeTexteame() {
-  var textAnuncio = document.querySelector('.mi-clase-text-anuncio').textContent;
+  // si el usuario esta activado, se añaden los datos, si no se añade el mensaje 'usuario no activado' en todos los datos
+  // entramos en texteame.es/isactivated y si da el mensaje true se procede a capturar los datos
+  // si da false se añade el mensaje 'usuario no activado' en todos los datos
+   var textAnuncio = document.querySelector('.mi-clase-text-anuncio').textContent;
   var tituloAnuncio = document.querySelector('.mi-clase-titulo-anuncio').textContent;
   var nombre = document.querySelector('.mi-clase-nombre').textContent;
   var edad = document.querySelector('.mi-clase-edad').textContent;
@@ -14,6 +31,7 @@ function capturarYAlmacenarDatosDeTexteame() {
   var whatsapp = document.querySelector('.mi-clase-whatsapp').textContent;
   var provincia = document.querySelector('.mi-clase-provincia').textContent;
   var nacionalidad = document.querySelector('.mi-clase-nacionalidad').textContent;
+
   // Almacenar los datos en la memoria de la extensión
   chrome.storage.local.set({
       'textAnuncio': textAnuncio,
@@ -25,8 +43,25 @@ function capturarYAlmacenarDatosDeTexteame() {
       'telefono': telefono,
       'whatsapp': whatsapp,
       'nacionalidad': nacionalidad
-  });
+  }, function() {
+      // Notificar al usuario que los datos han sido almacenados
+      document.getElementById("datosCopiados").style.display = "block";
+      // Cerrar la ventana después de 3 segundos
+      setTimeout(function() {
+          window.close();
+      }, 3000);
+  }
+  );
+
+  
 }
+// Ejecutar funciones según la página
+
+// si se hace click en copiar && espaginadetexteame se ejecuta la funcion capturarYAlmacenarDatosDeTexteame
+if (esPaginaDeTexteame()) {
+  capturarYAlmacenarDatosDeTexteame();
+}
+
 
 // Función para autorellenar en destacamos.net
 function esPaginaDeDestacamos() {
@@ -120,11 +155,145 @@ function autorellenarEnLoquosex() {
 if (esPaginaDeLoquosex()) {
   autorellenarEnLoquosex();
 }
-
-// Ejecutar funciones según la página
-if (esPaginaDeTexteame()) {
-  capturarYAlmacenarDatosDeTexteame();
+function esPaginaDeTuteanuncias() {
+  return window.location.href.includes("tuteanuncias.com/listing-form/");
 }
+
+function autorellenarEnTuteanuncias() {
+  chrome.storage.local.get(['textAnuncio', 'tituloAnuncio', 'nombre', 'edad', 'ciudad', 'provincia', 'telefono', 'whatsapp', 'nacionalidad'], function(datos) {
+    if (datos.textAnuncio) {
+      // Establecer valores en los campos del formulario
+      // Nota: Asegúrate de que los selectores CSS sean correctos
+      document.querySelector('input[name="title"]').value = datos.tituloAnuncio.trim();
+      document.querySelector('textarea[name="description"]').value = datos.textAnuncio.trim();
+      document.querySelector('input[name="phone"]').value = datos.telefono.trim();
+      document.querySelector('input[name="email"]').value = "noresponse@noresponse.com"; // Ejemplo, ajusta según sea necesario
+
+      // Para los campos de selección, como categorías o ubicaciones, necesitarás implementar una lógica similar
+      // a la que usaste para los otros sitios, ajustando los selectores y valores según corresponda
+
+      // Ejemplo para el campo WhatsApp (ajusta según sea necesario)
+      //ciudad iria en direccion
+      document.querySelector('textarea[name="address"]').value = datos.ciudad.trim();
+
+        }
+  });
+}
+
+if (esPaginaDeTuteanuncias()) {
+  autorellenarEnTuteanuncias();
+}
+function esPaginaDeVIPScort() {
+  return window.location.href.includes("vipscort.es/listing-form/");
+}
+
+function autorellenarEnVIPScort() {
+  chrome.storage.local.get(['textAnuncio', 'tituloAnuncio', 'nombre', 'edad', 'ciudad', 'provincia', 'telefono', 'whatsapp', 'nacionalidad'], function(datos) {
+    if (datos.textAnuncio) {
+      // Autorellenar título y descripción del anuncio
+      document.querySelector('input[name="title"]').value = datos.tituloAnuncio.trim();
+      document.querySelector('textarea[name="description"]').value = datos.textAnuncio.trim();
+      // el textarea con el name address es la ciudad
+      document.querySelector('textarea[name="address"]').value = datos.ciudad.trim();
+      // Autorellenar teléfono y email (ajustar si es necesario)
+      document.querySelector('input[name="phone"]').value = datos.telefono.trim();
+      document.querySelector('input[name="email"]').value = "noreply@noreply.com"; // Ajusta este valor según sea necesario
+      // la provincia debe coincidir con el text del dropdown que esta dentro de la id acadp-form-control-location
+      var whatsappSelector = document.querySelector('select[name="acadp_fields[444]"]');
+      whatsappSelector.value = datos.whatsapp.trim() === "Si" ? "Si uso whatsapp" : "No, Solo llamadas";
+
+      // Otros campos como categorías, ubicación, etc., necesitan ser ajustados según los datos almacenados y la estructura del formulario
+      // Por ejemplo, si necesitas seleccionar una categoría o ubicación específica, deberás implementar una lógica similar
+      // a la que usaste en los sitios anteriores para seleccionar la opción correcta del dropdown
+    }
+  });
+}
+
+if (esPaginaDeVIPScort()) {
+  autorellenarEnVIPScort();
+}
+
+// Verifica si estamos en la página de PutaPasion
+function esPaginaDePutaPasion() {
+  return window.location.href.includes("putapasion.com/perfil/nuevo/");
+}
+
+// Función para autorellenar en PutaPasion
+function autorellenarEnPutaPasion() {
+  chrome.storage.local.get(['textAnuncio', 'tituloAnuncio', 'nombre', 'edad', 'ciudad', 'telefono', 'whatsapp', 'nacionalidad'], function(datos) {
+    if (datos.textAnuncio) {
+      // Autorellenar categoría, título y descripción del anuncio
+      document.querySelector('#category').value = "Putas y escorts"; // Ajustar según sea necesario
+      document.querySelector('#title').value = datos.tituloAnuncio.trim();
+      document.querySelector('#description').value = datos.textAnuncio.trim();
+
+      // Autorellenar edad
+      document.querySelector('#age').value = datos.edad || 18;
+
+      // Autorellenar precio, si se dispone de esta información
+      // document.querySelector('#price').value = ""; // Ajustar según sea necesario
+
+      // Configurar horarios (por ejemplo, marcando la casilla de 24 horas)
+      document.querySelector('#allDay').checked = true;
+
+      // Otros campos como teléfono, ubicación, etc., pueden ser ajustados de forma similar
+      // Asegúrate de utilizar los selectores correctos para cada campo en el formulario de PutaPasion
+    }
+  });
+}
+
+// Verificar la página y ejecutar la función de autorelleno
+if (esPaginaDePutaPasion()) {
+  autorellenarEnPutaPasion();
+}
+
+
+function esPaginaDeMundoSexAnuncio() {
+  return window.location.href.includes("mundosexanuncio.com/publicar");
+}
+
+function autorellenarEnMundoSexAnuncio() {
+  chrome.storage.local.get(['textAnuncio', 'tituloAnuncio', 'nombre', 'edad', 'ciudad', 'provincia', 'telefono', 'whatsapp', 'nacionalidad'], function(datos) {
+    if (datos.textAnuncio) {
+      // Autorellenar título del anuncio
+      document.querySelector('input[name="titol"]').value = datos.tituloAnuncio.trim();
+
+      // Autorellenar descripción
+      tinymce.get('descripcio').setContent(datos.textAnuncio.trim());
+
+      // Autorellenar provincia (este es un ejemplo, ajustar según la lógica de selección de provincias)
+      var provinciaSelector = document.querySelector('select[name="id_provincia"]');
+      for (var i = 0; i < provinciaSelector.options.length; i++) {
+        if (provinciaSelector.options[i].text === datos.provincia.trim()) {
+          provinciaSelector.selectedIndex = i;
+          break;
+        }
+      }
+
+      // Autorellenar ciudad (esto requerirá una lógica adicional para manejar el cambio dinámico de ciudades basado en la provincia seleccionada)
+      // ...
+
+      // Autorellenar teléfono
+      document.querySelector('#telefono').value = datos.telefono.trim();
+
+      // Marcar el checkbox de WhatsApp si es necesario
+      var whatsappCheckbox = document.querySelector('input[name="whatsapp"]');
+      whatsappCheckbox.checked = datos.whatsapp.trim() === "Si";
+      //marcamos todos los checkbox como true
+      document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = true);
+      // Otros campos como email, enlace a la web, perfil de Twitter, etc., pueden ser autorellenados de forma similar
+      // ...
+
+      // Asegúrate de implementar la lógica necesaria para manejar campos dinámicos o dependientes de otros campos
+    }
+  });
+}
+
+if (esPaginaDeMundoSexAnuncio()) {
+  autorellenarEnMundoSexAnuncio();
+}
+
+
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action == "autorellenar") {
